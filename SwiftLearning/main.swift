@@ -30,3 +30,22 @@ switch getMark() {
     case .grade(let s1, let s2, let s3):
         print(s1, s2, s3)
 }
+
+
+enum SocialMediaPlatform {
+    case twitter(followers: Int)
+    case youtube(subscribers: Int)
+    case instagram
+    case linkedIn
+}
+
+func getSponsorshipEligibility(for platform: SocialMediaPlatform) {
+    switch platform {
+        case .twitter(let followers) where followers > 10_000:
+            print("Eligible for sponsored Twitter")
+        case .youtube(let subscribers) where subscribers > 20_000:
+            print("Eligible for sponsored Youtube")
+        default:
+            print("Not eligible")
+    }
+}
