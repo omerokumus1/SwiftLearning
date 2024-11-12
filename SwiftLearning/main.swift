@@ -7,5 +7,21 @@
 
 import Foundation
 
-print("Hello, World!")
+@propertyWrapper
+struct Cached {
+    private var cachedValue: String? = nil
+    var projectedValue: Cached { return self }
+    
+    var wrappedValue: String? {
+        get { cachedValue }
+        set { cachedValue = newValue }
+    }
+    
+}
 
+struct CachedExample {
+    @Cached var prop: String? = "cached value"
+}
+
+var cachedExample = CachedExample()
+cachedExample.$prop.invalidate()
