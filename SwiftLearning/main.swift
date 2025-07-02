@@ -7,40 +7,24 @@
 
 import Foundation
 
-//MARK: - Function Arguments are Immutable
-// ❌ Does not work
-//func removeInitial(_ str: String) -> String {
-//    // The following line gives the error;
-//    // Cannot use mutating member on immutable value: 'str' is a 'let' constant
-//    str.remove(at: str.startIndex)
-//    return str
-//}
+//MARK: - dump() Function
+//let fruits = ["Orange", "Banana", "Apple", "Mango", "Pineapple"]
+//dump(fruits)
 
-// ✅ Solution
-func removeInitial(_ str: String) -> String {
-    var str = str // Copy the element as 'var'
-    str.remove(at: str.startIndex)
-    return str
-}
+let fruits = ["Portakal", "Muz", "Elma", "Mango", "Ananas"]
+dump(fruits)
 
-//MARK: - Arrays are Value Type
-
-var arr1 = [1, 2, 3]
-var arr2 = arr1 // Copies arr1
-arr2.append(4)
-print(arr1) // Prints [1, 2, 3]
-print(arr2) // Prints [1, 2, 3, 4]
-
-func mutateArray(_ arr: [Int]) -> [Int] {
-    // Function args are immutable, so you cant change them
-    // This is the trick to make them mutable
-    var arrCopy = arr // Copies arr, since arr is a value type
-    arrCopy.append(0)
-    return arrCopy
-}
-
-var arr = [1, 2, 3]
-arr = mutateArray(arr)
-print(arr) // prints [1, 2, 3, 0]
 print()
 
+// MARK: - dump() Function 2
+struct User {
+    let id: Int
+    let name: String
+    let isActive: Bool
+}
+
+let user = User(id: 1, name: "Ömer", isActive: true)
+
+dump(user)
+
+print()
