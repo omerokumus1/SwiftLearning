@@ -7,24 +7,28 @@
 
 import Foundation
 
-//MARK: - dump() Function
-//let fruits = ["Orange", "Banana", "Apple", "Mango", "Pineapple"]
-//dump(fruits)
+//MARK: - CustomDebugStringConvertible
 
-let fruits = ["Portakal", "Muz", "Elma", "Mango", "Ananas"]
-dump(fruits)
 
-print()
-
-// MARK: - dump() Function 2
-struct User {
-    let id: Int
-    let name: String
-    let isActive: Bool
+struct User: CustomDebugStringConvertible {
+    var id: Int
+    var username: String
+    var password: String // sensitive, shouldn't show in debug
+    
+    var debugDescription: String { // You have to prvovide this
+        return "User(id: \(id), username: \(username))"
+    }
 }
 
-let user = User(id: 1, name: "Ömer", isActive: true)
-
-dump(user)
+let user = User(id: 1, username: "Ömer", password: "secret123")
+print(user)      // Prints: User(id: 1, username: omerdev)
 
 print()
+
+// MARK: - debugPrint
+// Better for sensitive data that shouldn't show in debug becuase print fallbacks
+debugPrint(user) // Prints: User(id: 1, username: omerdev)
+print(user)      // Prints: User(id: 1, username: omerdev) (fallbacks if CustomStringConvertible not implemented)
+
+// MARK: - print Fallback
+
