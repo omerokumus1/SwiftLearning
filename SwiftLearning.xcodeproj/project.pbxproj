@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D0351BAF2E1BD59900AE6726 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0351BAE2E1BD59900AE6726 /* Observable.swift */; };
+		D0351BB12E1BD71400AE6726 /* AsyncObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0351BB02E1BD71400AE6726 /* AsyncObservable.swift */; };
 		D0774C832E16470200A386A5 /* SingleObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0774C822E16470200A386A5 /* SingleObservable.swift */; };
-		D0774C852E164B9D00A386A5 /* SimpleObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0774C842E164B9D00A386A5 /* SimpleObservable.swift */; };
+		D0774C852E164B9D00A386A5 /* StringObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0774C842E164B9D00A386A5 /* StringObservable.swift */; };
 		D0F4514329EE8FCE00D0F7F2 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F4514229EE8FCE00D0F7F2 /* main.swift */; };
 /* End PBXBuildFile section */
 
@@ -25,8 +27,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D0351BAE2E1BD59900AE6726 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
+		D0351BB02E1BD71400AE6726 /* AsyncObservable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncObservable.swift; sourceTree = "<group>"; };
 		D0774C822E16470200A386A5 /* SingleObservable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleObservable.swift; sourceTree = "<group>"; };
-		D0774C842E164B9D00A386A5 /* SimpleObservable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleObservable.swift; sourceTree = "<group>"; };
+		D0774C842E164B9D00A386A5 /* StringObservable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringObservable.swift; sourceTree = "<group>"; };
 		D0F4513F29EE8FCE00D0F7F2 /* SwiftLearning */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftLearning; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0F4514229EE8FCE00D0F7F2 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,7 +67,9 @@
 			children = (
 				D0F4514229EE8FCE00D0F7F2 /* main.swift */,
 				D0774C822E16470200A386A5 /* SingleObservable.swift */,
-				D0774C842E164B9D00A386A5 /* SimpleObservable.swift */,
+				D0774C842E164B9D00A386A5 /* StringObservable.swift */,
+				D0351BAE2E1BD59900AE6726 /* Observable.swift */,
+				D0351BB02E1BD71400AE6726 /* AsyncObservable.swift */,
 			);
 			path = SwiftLearning;
 			sourceTree = "<group>";
@@ -126,9 +132,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0351BAF2E1BD59900AE6726 /* Observable.swift in Sources */,
+				D0351BB12E1BD71400AE6726 /* AsyncObservable.swift in Sources */,
 				D0774C832E16470200A386A5 /* SingleObservable.swift in Sources */,
 				D0F4514329EE8FCE00D0F7F2 /* main.swift in Sources */,
-				D0774C852E164B9D00A386A5 /* SimpleObservable.swift in Sources */,
+				D0774C852E164B9D00A386A5 /* StringObservable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

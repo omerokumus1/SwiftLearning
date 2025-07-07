@@ -7,13 +7,13 @@
 
 import Foundation
 
-class SingleObservable<T> {
-    var value: T? {
-        didSet {
-            onValueChanged?(value)
-        }
-    }
-    
-    var onValueChanged: ((T?) -> Void)?
-    
-}
+//class SingleObservable<T> {
+//    var value: T? {
+//        didSet {
+//            onValueChanged?(value)
+//        }
+//    }
+//    
+//    var onValueChanged: ((T?) -> Void)?
+//    
+//}

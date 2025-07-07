@@ -37,16 +37,16 @@ stringObservable.setValue("DrMobileDev")
 print()
 
 // MARK: - SingleObservable
-let singleObservable = SingleObservable<String>()
-singleObservable.onValueChanged = { value in
-    print("Value changed to: \(value)")
-}
-
-singleObservable.value = "Hello, World!"
-singleObservable.value = nil
-
-
-print()
+//let singleObservable = SingleObservable<String>()
+//singleObservable.onValueChanged = { value in
+//    print("Value changed to: \(value)")
+//}
+//
+//singleObservable.value = "Hello, World!"
+//singleObservable.value = nil
+//
+//
+//print()
 
 // MARK: - Async Observable with Closures
 var onValueChanged: ((Int?) -> Void)? // Closure to call after value changed
@@ -68,3 +68,14 @@ value = 24 // Setting this triggers didSet then onNameChanged,
 
 print()
 Thread.sleep(forTimeInterval: 2)
+
+
+// MARK: - Observable Generic Class
+var nameObservable = Observable<String>()
+nameObservable.onValueChanged = { value in
+    print("Value changed to: \(value)")
+}
+nameObservable.value = "Hello, World!"
+
+
+print()
