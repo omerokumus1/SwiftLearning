@@ -7,6 +7,21 @@
 
 import Foundation
 
+/* Chapters
+    1. DispatchQueue - Serial, Concurrent
+    2. async, asyncAfter, asyncAndWait
+    3. suspend and resume
+    4. QoS
+    5. DispatchQueue Hierarchy - target
+    6. Global Dispatch Queue
+    7. Main Dispatch Queue
+    8. Deadlocks
+    9. DispatchWorkItem: Creating, Calling, Cancelling, Cancellation Checking, Flags, Options
+    
+ 
+    
+ */
+
 // MARK: - DispatchQueue
 // ----------------------------------------- Serial DispatchQueue -----------------------------------------
 // - Serial DispatchQueue: FIFO, Single Thread - One Task at a Time, Thread-Safe
@@ -197,6 +212,29 @@ concurrentQueue.asyncAndWait { }
 // sync: Submits a block object for execution and returns after that block finishes executing.
 concurrentQueue.sync { }
 
+/* Question
+ What happens to the current thread when I call sync like dispatchQueue.sync { .. }? Does it stop and wait?
+ Also, on which thread sync is run?
+ 
+ Answer
+ Gardrops chatgpt: https://chatgpt.com/c/686be4df-db60-8002-b853-fbc92fbedf41#:~:text=%C5%9Eunu%20dedin%3A-,What%20happens%20to%20the,-current%20thread%20when
+ 
+ */
+
+/* Question 1.1
+ How a task with higher priority is dispatched compared to others with lower priority? Say you have a concurrent dispatch queue
+ with qos .background. You enqueue an async task as dispatchQueue.async(qos: .userInitiated) { .. } after enqueuing 5 tasks
+ with qos .background for each. Does FIFO still applies or .userInitiated is dispatched first? What happens under the hood?
+ 
+ Answer
+ Gardrops chatgpt: https://chatgpt.com/c/686be4df-db60-8002-b853-fbc92fbedf41#:~:text=How%20a%20task%20with%20higher%20priority
+ 
+ Question 1.2
+ What happens if the queue is serial? Rethink the whole case again and provide a similar explanation
+ 
+ Answer
+ Gardrops chatgpt: https://chatgpt.com/c/686be4df-db60-8002-b853-fbc92fbedf41#:~:text=What%20happens%20if%20the%20queue
+ */
 
 
 
@@ -228,10 +266,10 @@ concurrentQueue.sync { }
  
  */
 
-// -> DispatchSerialQueue and DispatchConcurrentQueue
+// -> DispatchSerialQueue and DispatchConcurrentQueue (EMPTY)
 
 
-// -> A mechanism that waits for both threads to finish
+// -> A mechanism that waits for both threads to finish (EMPTY)
 
 
 
@@ -407,6 +445,11 @@ childC.setTarget(queue: parent)
  
  This lets you have, for example, multiple independent serial sub‑queues (childA, childB, etc.), all feeding into one concurrent parent.
  Each child still runs its own tasks in sequence, but different children can run in parallel.
+ 
+ ** In the context of Dispatch Queue hierarchy, the children dequeueuing means dispatching items to parent's queue, not launching them.
+    If the child is serial, then it dispatches serially. If child is concurrent, then it dispatches concurrently and
+    parent queue is filled nearly immediately.
+    Task execution is bound to parent queueu's behavior whether it is serial or concurrent.
  */
 
 /* Key Benefits, Pitfalls & Howw to Avoid Them, Wen to Use Queue Hierarchies
@@ -425,11 +468,28 @@ childC.setTarget(queue: parent)
  
  Question 1.2
  - What happens if one of the children is a concurrent queue? Rethink all the case and do the same for one child is serial and the other is concurrent
+ 
+ Answer
+ Gardrops chatgpt: https://chatgpt.com/c/686be4df-db60-8002-b853-fbc92fbedf41#:~:text=%C5%9Eunu%20dedin%3A-,What%20happens%20if%20one,-of%20the%20children
+ 
+ Question 1.3
+ - What happens if parent is serial and both children are concurrent? Rethink all the case and do the same explanation
+ 
+ Answer
+ Gardrops Chatgpt: https://chatgpt.com/c/686be4df-db60-8002-b853-fbc92fbedf41#:~:text=%C5%9Eunu%20dedin%3A-,%2D%20What%20happens,-if%20parent%20is
+ 
+ Question 1.4
+ - What happens if parent is serial and one child is concurrent while the other is serial? Rethink all the case and do the same explanation
+ 
+ Answer
+ Gardrops Chatgpt: https://chatgpt.com/c/686be4df-db60-8002-b853-fbc92fbedf41#:~:text=%C5%9Eunu%20dedin%3A-,%2D%20What%20happens%20if,-parent%20is%20serial%20and%20one
  */
 
 /* Question 2
  When I create a new DispatchQueue, does it inherently targets the corresponding global DispatchQueue or it is completely different from global DispatchQueue?
  
+ Answer
+ Gardrops Chatgpt: https://chatgpt.com/c/686be4df-db60-8002-b853-fbc92fbedf41#:~:text=When%20I%20create%20a%20new%20DispatchQueue
  */
 
 
@@ -443,13 +503,156 @@ let customQueueWithTarget = DispatchQueue(label: "com.example.customWithTarget",
 
 
 
+// MARK: - Priority Inversion
+/*
+ Priority Inversion
+ Priority inversion occurs when a high-priority task is blocked by a lower-priority task, effectively inverting
+ their priorities. This can lead to performance problems and even deadlocks.
+ 
+ Example:
+ Imagine a high-priority task needs to access a shared resource that is currently held by a low-priority task.
+ The high-priority task will be blocked until the low-priority task releases the resource. If the low-priority
+ task is preempted by other tasks, the high-priority task may be blocked for an extended period.
+ 
+ Mitigation:
+ - Avoid long-running tasks in low-priority queues: This reduces the likelihood of blocking high-priority tasks.
+ - Use priority inheritance: Some synchronization mechanisms, such as mutexes, support priority inheritance, which
+ temporarily boosts the priority of the holding thread to match the priority of the waiting thread.
+ - Carefully design your application's concurrency model: Avoid situations where high-priority tasks are likely
+ to be blocked by low-priority tasks.
+ 
+ 
+ */
 
 
 
 
+// MARK: - DispatchWorkItem
+/*
+ DispatchWorkItem offers additional features:
+ - Encapsulation: It encapsulates a unit of work, making it easier to manage and reason about.
+ - Cancellation: It allows you to cancel the execution of the task if it's no longer needed.
+ - Notification: It provides a way to be notified when the task has completed, regardless of whether
+    it completed successfully or was cancelled.
+ Dependency Management: While full dependency management is covered in a later lesson using Dispatch Groups,
+    DispatchWorkItem can be used in conjunction with other GCD features to create basic dependencies.
+ 
+ */
+
+// -> Creating a DispatchWorkItem with closure
+let workItem1 = DispatchWorkItem {
+    print("Hello, World!")
+}
+let workItem3 = DispatchWorkItem(qos: .utility) {
+    print("Utility QoS")
+}
+
+// Dispatching a DispatchWorkItem
+let queue = DispatchQueue(label: "com.example.myqueue", attributes: .concurrent)
+
+let workItem2 = DispatchWorkItem {
+    print("Executing work item on \(Thread.current)")
+}
+
+queue.async(execute: workItem2) // Asynchronous execution
+// queue.sync(execute: workItem) // Synchronous execution
+
+/* -> Flags
+
+DispatchWorkItem provides flags that allow you to control various aspects of its execution.
+These flags are passed during the initialization of the DispatchWorkItem.
+
+ - .inheritQoS: Inherits the Quality of Service (QoS) class of the current execution context.
+    This is the default behavior if no flags are specified.
+ - .assignCurrentContext: Assigns the current execution context to the work item.
+    This is useful when you want the work item to retain the context in which it was created,
+    even if it's executed on a different queue.
+ - .detached: Detaches the work item from the current execution context.
+    This can be useful when you want to ensure that the work item doesn't inherit any unwanted
+    attributes from the current context.
+ - .barrier: This flag is used in conjunction with concurrent queues to create a barrier.
+    When a work item with the .barrier flag is executed, the queue waits until all previously
+    submitted tasks have completed before executing the barrier task. Once the barrier task is complete,
+    the queue resumes its normal concurrent execution.
+
+ */
+
+// .barrier Example
+let q = DispatchQueue(label: "com.example.myqueue", attributes: .concurrent)
+
+// Write operations
+q.async(flags: .barrier) {
+    print("Write operation 1 - Starting")
+    Thread.sleep(forTimeInterval: 1)
+    print("Write operation 1 - Completed")
+}
+
+q.async {
+    print("Read operation 1 - Starting")
+    Thread.sleep(forTimeInterval: 0.5)
+    print("Read operation 1 - Completed")
+}
+
+q.async(flags: .barrier) {
+    print("Write operation 2 - Starting")
+    Thread.sleep(forTimeInterval: 1)
+    print("Write operation 2 - Completed")
+}
+
+q.async {
+    print("Read operation 2 - Starting")
+    Thread.sleep(forTimeInterval: 0.5)
+    print("Read operation 2 - Completed")
+}
+/*
+ In this example, the barrier ensures that "Write operation 1" doesn't start until
+ "Read operation 1" has completed. Similarly, "Write operation 2" waits for "Read operation 2".
+ This is useful for synchronizing access to shared resources.
+ */
 
 
+/* -> Cancelling DispatchWorkItems
+ - One of the key benefits of using DispatchWorkItem is the ability to cancel a task before it completes.
+ - This can be useful in situations where the task is no longer needed, such as when the user cancels an
+ operation or when the data being processed is no longer valid.
+ - Cancelling only set isCancelled flag. It is the closure's duty to check this flag before executing. This is why
+    cancelling is not the thing you've expected. For example, if you have a network operation running, cancelling
+    DispatchWorkItem does not cancel the network request, nor you can't check it in the middle of the request.
+    The only thing you can do is checking the flag after the network request is finished. If you have access to the
+    networking task, you have to cancel it too.
+ */
+let workItem4 = DispatchWorkItem {
+    // Code to be executed
+    print("DispatchWorkItem executing")
+}
 
+let queue2 = DispatchQueue(label: "com.example.myqueue", attributes: .concurrent)
+
+queue2.async(execute: workItem4)
+
+// Cancel the work item
+workItem4.cancel()
+
+// ** Cancelling only set isCancelled flag. It is the closure's duty to check this flag before executing.
+let queue3 = DispatchQueue.global(qos: .default)
+let workItem5 = DispatchWorkItem {
+    for i in 0..<100 {
+        if workItem5.isCancelled {
+            print("Task cancelled")
+            return // Important: Exit the work item's execution
+        }
+        print("Processing item \(i)")
+        Thread.sleep(forTimeInterval: 0.1) // Simulate some work
+    }
+    print("Task completed")
+}
+
+queue3.async(execute: workItem5)
+
+// Simulate some time passing, then cancel the work item
+DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+    workItem5.cancel()
+}
 
 
 // async(group) and async(flags)
