@@ -15,8 +15,23 @@ import Foundation
     5. DispatchQueue Hierarchy - target
     6. Global Dispatch Queue
     7. Main Dispatch Queue
-    8. Deadlocks
-    9. DispatchWorkItem: Creating, Calling, Cancelling, Cancellation Checking, Flags, Options
+    8. Deadlocks Intro
+    9. DispatchWorkItem: Creating, Calling, Cancelling, Cancellation Checking, Flags, Options, Deadlocks
+    10. Race Conditions & Deadlocks
+    11. Dispatch Semaphores for Synchronization
+    12. Reader-Writer Locks
+    13. Dispatch Groups for Dependency Management
+    14. Advanced Semaphore Techniques
+    15. Semaphores and Dispatch Groups
+    16. GCD for Async Networking
+    17. Concurrent Network Manager
+        .1. Concurrent Network Manager
+        .2. Concurrent Network Manager with Batch Size
+    18. Handling Network Errors and Retries
+    19. Dispatch Sources for Monitoring Network Events
+    20. Optimizing Network Performance with GCD
+    21. Main Dispatch Queue and UI Updates
+
     
  
     
@@ -655,6 +670,25 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
 }
 
 
+
+// MARK: - Dispatch Semaphores for Synchronization
+// Allows you to control the number of concurrent executions of a specific code block.
+// This is particularly useful when dealing with resources that have limited capacity
+// or when you need to ensure that certain operations are performed in a specific order.
+
+let dispatchSemaphore = DispatchSemaphore(value: 2) // Allow 2 concurrent accesses
+
+
+
+
+
+
+
+
+
+
+
+
 // async(group) and async(flags)
 // asyncAndWait in detail (look for its docs)
 // sync in detail (look for its docs)
@@ -665,5 +699,7 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
 // DispatchQueue docs: Avoiding Excessive Thread Creation
 // autoreleaseFrequency
 
+// DispatchTasks class: Wraps around DispatchGroup, can be waited like DispatchGroup but tasks enters and leaves by theirselves
+// Create custom classes from Roadmapsh
 
 Thread.sleep(forTimeInterval: 1)
