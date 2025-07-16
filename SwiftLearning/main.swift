@@ -8,6 +8,27 @@
 import Foundation
 import Combine
 
+/*
+ 1. Intro: The Main Idea + Simple Combine Flow
+ 2. Publishers
+ 3. Subscribers
+ 4. Subjects
+ 5. Operators
+ 6. Schedulers
+ 7. Memory Management & Cancellation
+ 8. Combine in Practice: Common Use Cases
+ 9. Testing Combine Code
+ 10. Advanced Topics
+ 11. Custom Publishers & Subscribers
+ 12. Best Practices & Patterns
+ 13. Common Pitfalls
+ 14. Performance
+ 15. Debugging
+ 16. Associated Tools
+ 17. Ecosystem & Further Resources
+ 18. Future Directions
+ */
+
 // MARK: - Publishers
 /*
  Publishers are types that expose values that can change over time.
@@ -35,6 +56,10 @@ let futurePublisher = Future<String, Error> { promise in
     }
 }
 
+/* Use Cases for Future Publisher
+ 
+ */
+
 
 // PassthroughSubject: A subject that broadcasts values to multiple subscribers.
 // It doesn't have an initial value or store the most recent value.
@@ -47,7 +72,15 @@ passthroughSubject.send("Second value")
 passthroughSubject.send("Third value")
 passthroughSubject.send(completion: .finished) // Signal completion
 
+/* Use Cases for PassthroughSubject
+ 
+ */
+
 // CurrentValueSubject: A subject that holds the most recent value and publishes it to new subscribers.
+
+/* Use Cases for CurrentValueSubject
+ 
+ */
 
 
 
@@ -81,6 +114,24 @@ passthroughSubject.send(completion: .finished) // Signal completion
 
 // -> receiveValue and receiveCompletion
 
+/* Core Concepts of Subscribers
+ - Subscription Request: Subscribers request a specific number of values from the Publisher.
+    This is done through a Subscription object.
+ 
+ - Value Reception: Subscribers receive values emitted by the Publisher.
+ - Completion Handling: Subscribers handle the successful completion of the Publisher.
+ - Error Handling: Subscribers handle any errors emitted by the Publisher.
+ - Backpressure: Subscribers can control the rate at which they receive values, preventing them from being overwhelmed by a fast-emitting Publisher.
+ 
+ */
+
+/* Managing Subscriptions
+ Subscriptions in Combine are represented by AnyCancellable objects.
+ It's crucial to store these objects to keep the subscription alive.
+ When the AnyCancellable is deallocated, the subscription is automatically cancelled.
+ A common practice is to use a Set<AnyCancellable> to manage multiple subscriptions.
+ */
+
 
 // MARK: - Operators
 /*
@@ -90,29 +141,70 @@ passthroughSubject.send(completion: .finished) // Signal completion
 
 /* Types of Operators
  Combine provides a rich set of operators, including:
-     - map: Transforms each value emitted by the Publisher.
-     - filter: Emits only values that satisfy a certain condition.
-     - removeDuplicates: Emits only values that are different from the previous value.
-     - combineLatest: Combines the latest values from multiple Publishers.
-     - zip: Combines values from multiple Publishers in a specific order.
- 
+    - map: Transforms each value emitted by the Publisher.
+    - filter: Emits only values that satisfy a certain condition.
+    - removeDuplicates: Emits only values that are different from the previous value.
+    - replaceNil: Replaces nil values with a default value.
+    - combineLatest: Combines the latest values from multiple Publishers.
+    - zip: Combines values from multiple Publishers in a specific order.
+    - catch: Handles errors emitted by the Publisher.
+    - flatMap: Transforms each value into a new Publisher and then flattens the stream
+        of Publishers into a single Publisher. This is useful for working with asynchronous
+        operations that return Publishers.
+    - debounce:
  */
 
+// -> map Example
+
+// -> filter Example
+
+// -> removeDuplicates Example
+
+// -> replaceNil Example
+
+// -> combineLatest Example
+
+// -> zip Example
+
+// -> catch Example
+
+// -> flatMap Example
+
+// -> Other use cases
+
+// -> Operator Chaining:
+
+/* Core Concepts of Operators
+ - Transformation: Operators can transform the values emitted by a Publisher.
+    For example, you can use the map operator to convert a string to an integer.
+ 
+ - Filtering: Operators can filter the values emitted by a Publisher, only allowing
+    certain values to pass through. For example, you can use the filter operator to
+    only allow even numbers to pass through.
+ 
+ - Combining: Operators can combine multiple Publishers into a single Publisher.
+    For example, you can use the zip operator to combine the latest values from two Publishers.
+ 
+ - Error Handling: Operators can handle errors emitted by a Publisher. For example,
+    you can use the catch operator to recover from an error and continue the data stream.
+ 
+ */
 
 
 // MARK: - Subjects
 /*
  Subjects are a special type in Combine that act as both a Publisher and a Subscriber.
  This means they can both receive values and emit them to other Subscribers.
- Subjects are useful for bridging imperative code with Combine's declarative style.
  
  PassthroughSubject
  As seen earlier, PassthroughSubject is a type of Subject that simply passes along values
  it receives to its subscribers. It doesn't store any value itself.
+ The passthroughSubject only emits values that are sent to it after the subscription is established.
  
  CurrentValueSubject
  CurrentValueSubject holds a current value and emits it to every new subscriber.
  When it receives a new value, it emits that value to all its subscribers.
+ Subsequent values sent to the subject are also emitted even subscription is established after.
  */
 
 
@@ -126,6 +218,28 @@ passthroughSubject.send(completion: .finished) // Signal completion
      - OperationQueue: Executes code on an operation queue.
      - RunLoop: Executes code on a run loop.
  */
+let numbers = [1, 2, 3, 4, 5].publisher
+
+// Performing operations on a background queue
+let subscription = numbers
+    .map { number -> Int in
+        print("Mapping \(number) on thread: \(Thread.current)")
+        return number * 2
+    }
+    .subscribe(on: DispatchQueue.global()) // Subscribe on background thread
+    .receive(on: DispatchQueue.main) // Receive results on main thread
+    .sink { value in
+        print("Received \(value) on thread: \(Thread.current)")
+    }
+
+/*
+ In this example, the subscribe(on:) operator specifies that the subscription and initial
+ processing should occur on a background queue. The receive(on:) operator specifies that
+ the results should be received on the main queue, which is important for updating UI elements.
+ 
+ In other words, sink Operators are run on the Scheduler defined by 'subscribe',
+ sink or assign are run on Scheduler defined by 'receive'
+ */
 
 
 
@@ -135,3 +249,7 @@ passthroughSubject.send(completion: .finished) // Signal completion
 // MARK: - Subscriber Protocol
 
 // MARK: - Custom Publisher
+
+// OperationQueue
+// RunLoop
+// Lifecycle-aware subscription
