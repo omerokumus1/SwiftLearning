@@ -9,24 +9,34 @@ import Foundation
 import Combine
 
 /*
+ -> Part 1: Pure Combine with Swift
+ -> Part 2: Combine with UIKit & MVVM
+ -> Part 3: Networking with Combine
+ -> Part 4: Advanced Combine
+ -> Part 5: Debugging, Testing, & Performance
+ 
  1. Intro: The Main Idea + Simple Combine Flow
  2. Publishers
  3. Subscribers
  4. Subjects
  5. Operators
  6. Schedulers
- 7. Memory Management & Cancellation
- 8. Combine in Practice: Common Use Cases
- 9. Testing Combine Code
- 10. Advanced Topics
- 11. Custom Publishers & Subscribers
- 12. Best Practices & Patterns
- 13. Common Pitfalls
- 14. Performance
- 15. Debugging
- 16. Associated Tools
- 17. Ecosystem & Further Resources
- 18. Future Directions
+ 7. Error Handling
+ 8. Memory Management & Cancellation
+ 9. User Interface Events with Combine
+ 10. Combine with MVVM: @Published, UIControl Publishers,
+ 9. Networking with Combine
+ 9. Combine in Practice: Common Use Cases
+ 10. Testing Combine Code
+ 11. Advanced Topics: BindingProxy
+ 12. Custom Publishers & Subscribers
+ 13. Best Practices & Patterns
+ 14. Common Pitfalls
+ 15. Performance
+ 16. Debugging
+ 17. Associated Tools
+ 18. Ecosystem & Further Resources
+ 19. Future Directions
  */
 
 // MARK: - Publishers
@@ -151,7 +161,8 @@ passthroughSubject.send(completion: .finished) // Signal completion
     - flatMap: Transforms each value into a new Publisher and then flattens the stream
         of Publishers into a single Publisher. This is useful for working with asynchronous
         operations that return Publishers.
-    - debounce:
+    - debounce: Emit only the most recent value after a specified time interval, useful for preventing excessive updates.
+    - throttle: Emit values at a maximum rate, useful for limiting the frequency of updates.
  */
 
 // -> map Example
