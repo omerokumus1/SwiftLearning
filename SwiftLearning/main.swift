@@ -45,10 +45,11 @@ import Foundation
 // - Serial DispatchQueue: FIFO, Single Thread - One Task at a Time, Thread-Safe
 
 let serialQueue = DispatchQueue(label: "serialQueue")
-serialQueue.async { print("serialQueue 1 Thread: \(Thread.current)") }
-serialQueue.async { print("serialQueue 2 Thread: \(Thread.current)") }
-serialQueue.async { print("serialQueue 3 Thread: \(Thread.current)") }
-
+print("Before") // Printed first
+serialQueue.async { print("serialQueue 1 Thread: \(Thread.current)") } // Always run 1.
+serialQueue.async { print("serialQueue 2 Thread: \(Thread.current)") } // Always run 2.
+serialQueue.async { print("serialQueue 3 Thread: \(Thread.current)") } // Always run 3.
+print("After") // Most likely runs before async blocks
 
 Thread.sleep(forTimeInterval: 1)
 
@@ -100,12 +101,101 @@ serialQueue.async {
     print()
 }
 
+// Ex: Performing sequential operation
+arr = [1,2,3,4,5]
+serialQueue.async { // Always runs in 3rd place
+    Thread.sleep(forTimeInterval: 1)
+    arr = arr.map { $0 * 10 }
+}
+
+serialQueue.async { // Always runs in 3rd place
+    Thread.sleep(forTimeInterval: 2)
+    arr = arr.map { $0 + 1 }
+}
+
+serialQueue.async { // Always runs in 3rd place
+    Thread.sleep(forTimeInterval: 1)
+    arr = arr.map { $0 / 2 }
+}
+
+serialQueue.async { // Always runs lastly
+    print(arr)
+}
+print(arr) // most likely prints first
+
+Thread.sleep(forTimeInterval: 5)
+
+
+// -> Nested Async Blocks
+print("Nested Async Blocks")
+serialQueue.async {
+    print("Outer block runs")
+    
+    // This puts another block into serialQueue
+    serialQueue.async { // Does not run before outer block finishes
+        print("Inner block runs")
+        Thread.sleep(forTimeInterval: 1)
+        print("Inner block finishes")
+    }
+    print("Outer block finishes")
+}
+
+Thread.sleep(forTimeInterval: 3)
+
+serialQueue.async {
+    print("Outer block runs")
+    
+    // This puts another block into serialQueue
+    serialQueue.async { // Does not run before outer block finishes
+        print("Inner block runs")
+        Thread.sleep(forTimeInterval: 1)
+        print("Inner block finishes")
+    }
+    
+    // Does not affect running order of inner and outer blocks
+    Thread.sleep(forTimeInterval: 4)
+    print("Outer block finishes")
+}
+
+Thread.sleep(forTimeInterval: 5)
+
 // * Searial Queue is most important in a Concurrent environment to sync shared resource access
+
+
+// -> sync function
+// Sync function puts the block in the queue and waits for it to run and finish
+
+serialQueue.sync {
+    print("sync block 1")
+} // Waits for the block to be finished, moves on afterwards
+
+serialQueue.sync {
+    print("sync block 2")
+} // Since the queue is serial, block 2 always runs after block 1,
+    // Waits here for both block 1 and block 2
+
+serialQueue.sync {
+    print("sync block 3")
+} // Same as above, waits here for block 1, block 2 and block 3.
+    // Then moves on afterwards
+
+// Code moves on after all the blocks above is finished
+
+
 
 /* Serial Queue Common Pitfalls
  - Deadlock via sync on same queue
     Calling serialQueue.sync { … } from within a task already running on serialQueue will hang forever.
- 
+ */
+//serialQueue.async {
+//    print("in async before sync")
+//    serialQueue.sync {
+//        print("in sync")
+//    }
+//    print("in async after sync")
+//}
+
+/*
  - Unintentional serialization
     If you use a single serial queue for unrelated tasks, total execution time is increased redundantly
  
@@ -126,12 +216,74 @@ serialQueue.async {
 let concurrentQueue = DispatchQueue(label: "concurrentQueue", attributes: .concurrent)
 
 concurrentQueue.async { print("concurrentQueue 1 Thread: \(Thread.current)") }
-//Thread.sleep(forTimeInterval: 1) // Without this, all three async runs on 3 different threads. Adding this reuses one of the threads
 concurrentQueue.async { print("concurrentQueue 2 Thread: \(Thread.current)") }
 concurrentQueue.async { print("concurrentQueue 3 Thread: \(Thread.current)") }
 
 
 Thread.sleep(forTimeInterval: 1)
+
+// -> Multiple Threads: One Thread for Each Task
+print("\nMultiple Threads: One Thread for Each Task")
+concurrentQueue.async {
+    print("concurrentQueue 1 Thread: \(Thread.current)")
+    Thread.sleep(forTimeInterval: 2)
+}
+
+concurrentQueue.async {
+    print("concurrentQueue 2 Thread: \(Thread.current)")
+    Thread.sleep(forTimeInterval: 2)
+}
+
+concurrentQueue.async {
+    print("concurrentQueue 3 Thread: \(Thread.current)")
+    Thread.sleep(forTimeInterval: 2)
+}
+
+Thread.sleep(forTimeInterval: 10) // Wait for all tasks to finish
+
+
+// -> Multiple Threads: Threads may be reused
+print("\nMultiple Threads: Threads may be reused")
+concurrentQueue.async {
+    print("concurrentQueue 1 Thread: \(Thread.current)")
+    Thread.sleep(forTimeInterval: 2)
+}
+Thread.sleep(forTimeInterval: 3) // Adding this reuses one of the threads because it lets the
+                                // first thread finishes its task before the next task is submitted
+concurrentQueue.async {
+    print("concurrentQueue 2 Thread: \(Thread.current)")
+    Thread.sleep(forTimeInterval: 2)
+}
+
+concurrentQueue.async {
+    print("concurrentQueue 3 Thread: \(Thread.current)")
+    Thread.sleep(forTimeInterval: 2)
+}
+
+Thread.sleep(forTimeInterval: 10) // Wait for all tasks to finish
+
+
+// -> Single Thread in Concurrent Queue
+print("\nSingle Thread in Concurrent Queue")
+concurrentQueue.async {
+    print("concurrentQueue 1 Thread: \(Thread.current)")
+}
+Thread.sleep(forTimeInterval: 1) // This lets the task above
+                                // is finished before submitting another one
+concurrentQueue.async {
+    print("concurrentQueue 2 Thread: \(Thread.current)")
+}
+Thread.sleep(forTimeInterval: 1)// This lets the task above
+                                // is finished before submitting another one
+concurrentQueue.async {
+    print("concurrentQueue 3 Thread: \(Thread.current)")
+}
+Thread.sleep(forTimeInterval: 5) // Wait for all tasks to finish
+
+
+
+
+
 
 /* Use Cases for Concurrent Queues
  - Performing Independent Tasks
@@ -701,6 +853,7 @@ let dispatchSemaphore = DispatchSemaphore(value: 2) // Allow 2 concurrent access
 // getSpecific in detail
 // DispatchQueue docs: Avoiding Excessive Thread Creation
 // autoreleaseFrequency
+// concurrentPerform
 
 // DispatchTasks class: Wraps around DispatchGroup, can be waited like DispatchGroup but tasks enters and leaves by theirselves
 // Create custom classes from Roadmapsh
