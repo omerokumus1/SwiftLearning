@@ -442,6 +442,9 @@ Thread.sleep(forTimeInterval: 10)
 // -> A mechanism that waits for both threads to finish (EMPTY)
 
 
+// MARK: - Syncronization
+// -> Barriers
+simulateBarrierMechanism()
 
 
 // MARK: - Global Dispatch Queues: System-Provided Concurrency
@@ -859,3 +862,7 @@ let dispatchSemaphore = DispatchSemaphore(value: 2) // Allow 2 concurrent access
 // Create custom classes from Roadmapsh
 
 Thread.sleep(forTimeInterval: 1)
+
+
+// Keep playground running
+//dispatchMain()
