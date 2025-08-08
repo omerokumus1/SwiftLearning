@@ -282,9 +282,6 @@ Thread.sleep(forTimeInterval: 5) // Wait for all tasks to finish
 
 
 
-
-
-
 /* Use Cases for Concurrent Queues
  - Performing Independent Tasks
     When tasks don't depend on each other and don't access shared mutable state, a concurrent queue can significantly improve performance by executing them in parallel.
@@ -337,7 +334,8 @@ concurrentQueue.async {
 Thread.sleep(forTimeInterval: 2)
 print()
 // Now we need a mechanism that waits for both threads to finish so that we have the latest version of the resultingArr
-// Thread.sleep is not guaranteed. Using it can lead to bugs since there is no guarantee that operations will be finished in 2 seconds or so. We will examine this later
+// Thread.sleep is not guaranteed. Using it can lead to bugs since there is no guarantee that operations will be finished
+// in 2 seconds or so. We will examine this later
 // This example also shows how you sync couple of async tasks with a serial queue to access a shared resource
 
 /* Concurrent Queue Common Pitfalls
@@ -406,8 +404,10 @@ concurrentQueue.sync { }
  Gardrops chatgpt: https://chatgpt.com/c/686be4df-db60-8002-b853-fbc92fbedf41#:~:text=What%20happens%20if%20the%20queue
  */
 
+// -> QoS Execution Time Test
+measureQoSExecution()
 
-
+Thread.sleep(forTimeInterval: 10)
 
 // ----------------------------------------- Dispatch Queue QoS vs Async Task QoS -----------------------------------------
 /*
