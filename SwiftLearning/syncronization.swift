@@ -76,3 +76,30 @@ func simulateBarrierMechanism() {
     Thread.sleep(forTimeInterval: 15)
 
 }
+
+let group = DispatchGroup()
+let groupQueue = DispatchQueue.global(qos: .userInitiated)
+
+func dispatchGroup() {
+    for i in 1...3 {
+        groupQueue.async(group: group) {
+            print("🔄 Task \(i) started")
+            Thread.sleep(forTimeInterval: Double(i)) // Simulate different durations
+            print("✅ Task \(i) completed")
+        }
+    }
+    
+    // This is called when all tasks in the group have finished
+    // notify function schedules a new task and does not wait for it to finish.
+    group.notify(queue: groupQueue) {
+        print("🎉 All tasks are done!")
+    }
+    // wait function blocks the current thread here until the group is finished
+//    group.wait()
+//    print("🎉 All tasks are done!")
+    
+//    let returned = group.wait(timeout: .now() + 2)
+    
+    Thread.sleep(forTimeInterval: 5)
+}
+

@@ -40,6 +40,8 @@ import Foundation
     
  */
 
+dispatchGroup()
+
 // MARK: - DispatchQueue
 // ----------------------------------------- Serial DispatchQueue -----------------------------------------
 // - Serial DispatchQueue: FIFO, Single Thread - One Task at a Time, Thread-Safe
