@@ -48,6 +48,61 @@ print()
 //
 //print()
 
+
+// MARK: - Observable Generic Class
+//var nameObservable = Observable<String>()
+//nameObservable.onValueChanged = { value in
+//    print("Value changed to: \(value)")
+//}
+//nameObservable.value = "Hello, World!"
+//
+//
+//print()
+
+
+// MARK: - 1-M Observable Generic Class
+var nameObservable = Observable<String>()
+nameObservable.addObserver { value in
+    print("Observer 1 - Value: \(value)")
+}
+nameObservable.addObserver { value in
+    print("Observer 2 - Value: \(value)")
+}
+
+nameObservable.value = "Hello!" // prints: Observer 1 - Value: Hello!
+                                        // Observer 2 - Value: Hello!
+
+
+print()
+
+
+// MARK: - Observable Property Wrapper
+class ViewModel {
+    @ObservableValue var name: String = ""
+    @ObservableValue var age: Int = 0
+}
+
+
+let vm = ViewModel()
+
+// Subscribe to changes
+vm.$name.observe { newName in
+    print("Name changed to: \(newName)")
+}
+
+vm.$age.observe { newAge in
+    print("Age changed to: \(newAge)")
+}
+
+// Trigger changes
+vm.name = "Ömer"  // Prints: Name changed to: Ömer
+vm.age = 30       // Prints: Age changed to: 30
+
+
+
+// MARK: - Async Observables
+
+
 // MARK: - Async Observable with Closures
 var onValueChanged: ((Int?) -> Void)? // Closure to call after value changed
 var value: Int? {
@@ -68,14 +123,3 @@ value = 24 // Setting this triggers didSet then onNameChanged,
 
 print()
 Thread.sleep(forTimeInterval: 2)
-
-
-// MARK: - Observable Generic Class
-var nameObservable = Observable<String>()
-nameObservable.onValueChanged = { value in
-    print("Value changed to: \(value)")
-}
-nameObservable.value = "Hello, World!"
-
-
-print()
